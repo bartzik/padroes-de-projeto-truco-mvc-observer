@@ -1,0 +1,1 @@
+Imagens de cartas copiadas do pacote enviado. Esperado padrão: <naipe>_<numero>.png (ex: paus_1.png, copas_12.png).
