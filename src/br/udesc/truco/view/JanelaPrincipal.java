@@ -2,12 +2,12 @@ package br.udesc.truco.view;
 
 import br.udesc.truco.controller.JogoController;
 import br.udesc.truco.model.Partida;
-import br.udesc.truco.util.Observador;
+import br.udesc.truco.controller.Observer;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class JanelaPrincipal extends JFrame implements Observador {
+public class JanelaPrincipal extends JFrame implements Observer {
     private final Partida partida;
     private final JogoController jogoController;
     private final PainelMesa painelMesa;
@@ -22,7 +22,7 @@ public class JanelaPrincipal extends JFrame implements Observador {
         painelPlacar = new PainelPlacar(partida);
         this.acoes = new Acoes(jogoController, this.partida);
 
-        partida.adicionarObservador(this);
+        partida.anexar(this);
 
         setLayout(new BorderLayout());
         add(painelPlacar, BorderLayout.NORTH);

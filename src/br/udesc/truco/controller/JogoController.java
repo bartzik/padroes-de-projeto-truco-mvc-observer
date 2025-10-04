@@ -35,7 +35,7 @@ public class JogoController {
         return jogadorAtual;
     }
 
-    public void alternarTurno() {
+    public void alternarJogadorDaVez() {
         jogadorAtual = (jogadorAtual == partida.getJogador1() ? partida.getJogador2() : partida.getJogador1());
     }
 
@@ -63,7 +63,7 @@ public class JogoController {
         if (j != jogadorAtual) return;
         Carta c = j.getMao().jogar(indice);
         partida.rodadaAtual().adicionarJogada(j, c);
-        alternarTurno();
+        alternarJogadorDaVez();
         if (partida.rodadaAtual().completa()) {
             Jogador vencedor = decidirVencedorDaRodada(partida.rodadaAtual(), partida.getManilha());
             partida.registrarResultadoRodada(vencedor);
@@ -134,7 +134,6 @@ public class JogoController {
         novaMao(proximoQueComeca);
     }
 
-
     public void reiniciarPartida() {
         partida.reiniciarPartida();
         // quem começa a nova partida pode ser Jogador 1 por padrão
@@ -142,7 +141,6 @@ public class JogoController {
         // recomeça normalmente
         novaMao(proximoQueComeca);
     }
-
 
     // --- APOSTAS (Truco/6/9/12) ---
     private boolean podePedirAposta(Jogador j) {
@@ -206,5 +204,4 @@ public class JogoController {
                     "Aposta", javax.swing.JOptionPane.WARNING_MESSAGE);
         });
     }
-
 }

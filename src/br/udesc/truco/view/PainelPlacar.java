@@ -1,12 +1,12 @@
 package br.udesc.truco.view;
 
 import br.udesc.truco.model.Partida;
-import br.udesc.truco.util.Observador;
+import br.udesc.truco.controller.Observer;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class PainelPlacar extends JPanel implements Observador {
+public class PainelPlacar extends JPanel implements Observer {
     private final Partida partida;
     private final JLabel label;
 
@@ -15,7 +15,7 @@ public class PainelPlacar extends JPanel implements Observador {
         this.label = new JLabel();
         setLayout(new FlowLayout(FlowLayout.CENTER));
         add(label);
-        p.adicionarObservador(this);
+        p.anexar(this);
         atualizar();
     }
 

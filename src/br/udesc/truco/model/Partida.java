@@ -1,7 +1,7 @@
 package br.udesc.truco.model;
 
 
-import br.udesc.truco.util.Observador;
+import br.udesc.truco.controller.Observer;
 
 import java.util.*;
 
@@ -210,18 +210,18 @@ public class Partida {
         notificar();
     }
 
-    private final List<Observador> observadores = new ArrayList<>();
+    private final List<Observer> observers = new ArrayList<>();
 
-    public void adicionarObservador(Observador o) {
-        observadores.add(o);
+    public void anexar(Observer o) {
+        observers.add(o);
     }
 
-    public void removerObservador(Observador o) {
-        observadores.remove(o);
+    public void removerObserver(Observer o) {
+        observers.remove(o);
     }
 
     public void notificar() {
-        for (Observador o : observadores) o.atualizar();
+        for (Observer o : observers) o.atualizar();
     }
 
 }

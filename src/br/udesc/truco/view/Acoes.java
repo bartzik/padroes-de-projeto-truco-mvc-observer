@@ -3,12 +3,12 @@ package br.udesc.truco.view;
 import br.udesc.truco.controller.JogoController;
 import br.udesc.truco.model.Jogador;
 import br.udesc.truco.model.Partida;
-import br.udesc.truco.util.Observador;
+import br.udesc.truco.controller.Observer;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class Acoes extends JPanel implements Observador {
+public class Acoes extends JPanel implements Observer {
     private final JogoController jogoController;
     private final Partida partida;
 
@@ -43,7 +43,7 @@ public class Acoes extends JPanel implements Observador {
         btnJogarNovamente.setVisible(false);
 
         //adicionando como observador
-        partida.adicionarObservador(this);
+        partida.anexar(this);
         atualizar();
 
         btnTruco.setEnabled(false);

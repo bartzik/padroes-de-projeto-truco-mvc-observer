@@ -3,13 +3,13 @@ package br.udesc.truco.view;
 import br.udesc.truco.controller.JogoController;
 import br.udesc.truco.model.*;
 import br.udesc.truco.util.CarregadorImagens;
-import br.udesc.truco.util.Observador;
+import br.udesc.truco.controller.Observer;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
-public class PainelMesa extends JPanel implements Observador {
+public class PainelMesa extends JPanel implements Observer {
     private final Partida partida;
     private final JogoController controle;
     private final JPanel mao1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -21,7 +21,7 @@ public class PainelMesa extends JPanel implements Observador {
         super(new BorderLayout());
         this.partida = p;
         this.controle = c;
-        p.adicionarObservador(this);
+        p.anexar(this);
 
         centro.setEditable(false);
         centro.setLineWrap(true);
