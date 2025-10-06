@@ -1,0 +1,12 @@
+# Ignorar arquivos compilados e temporários
+/out/
+/bin/
+/.idea/
+/.DS_Store
+*.iml
+
+# Ignorar arquivos de sistema e IDE
+.classpath
+.project
+.settings/
+
