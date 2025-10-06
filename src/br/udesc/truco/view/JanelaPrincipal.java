@@ -8,7 +8,8 @@ import javax.swing.*;
 import java.awt.*;
 
 public class JanelaPrincipal extends JFrame implements Observer {
-    private final Partida partida;
+	private static final long serialVersionUID = 1L;
+	private final Partida partida;
     private final JogoController jogoController;
     private final PainelMesa painelMesa;
     private final PainelPlacar painelPlacar;

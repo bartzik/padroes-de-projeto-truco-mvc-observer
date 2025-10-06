@@ -9,6 +9,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class Acoes extends JPanel implements Observer {
+	private static final long serialVersionUID = 1L;
     private final JogoController jogoController;
     private final Partida partida;
     private final JButton btnTruco = new JButton("Pedir Truco");

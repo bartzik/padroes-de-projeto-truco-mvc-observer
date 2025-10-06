@@ -10,7 +10,8 @@ import java.awt.*;
 import java.util.List;
 
 public class PainelMesa extends JPanel implements Observer {
-    private final Partida partida;
+	private static final long serialVersionUID = 1L;
+	private final Partida partida;
     private final JogoController controle;
     
     private final JPanel mao1 = new JPanel(new FlowLayout(FlowLayout.LEFT));

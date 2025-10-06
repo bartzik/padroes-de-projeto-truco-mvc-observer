@@ -8,7 +8,8 @@ import javax.swing.*;
 import java.awt.*;
 
 public class PainelPlacar extends JPanel implements Observer {
-    private final Partida partida;
+	private static final long serialVersionUID = 1L;
+	private final Partida partida;
     private final JLabel label;
     private final JLabel labelVira = new JLabel();
 
