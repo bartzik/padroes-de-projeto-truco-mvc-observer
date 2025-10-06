@@ -30,4 +30,13 @@ public class Carta {
     public String toString() {
         return encoberta ? "[Encoberta]" : (valorCarta + " de " + naipe);
     }
+
+    public int valorParaComparacao(ValorCarta manilha) {
+        if (this.valorCarta == manilha) {
+            return 100 + naipe.ordinal(); 
+        }
+
+        return valorCarta.ordinal();
+    }
+
 }

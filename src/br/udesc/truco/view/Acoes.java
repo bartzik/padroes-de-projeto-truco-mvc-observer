@@ -11,11 +11,10 @@ import java.awt.*;
 public class Acoes extends JPanel implements Observer {
     private final JogoController jogoController;
     private final Partida partida;
-
     private final JButton btnTruco = new JButton("Pedir Truco");
-    private final JButton btnAceitar = new JButton("Aceitar");
-    private final JButton btnCorrer = new JButton("Correr");
     private final JButton btnJogarNovamente = new JButton("Jogar novamente");
+
+    private boolean janelaTrucoAberta = false;
 
     public Acoes(JogoController jogoController, Partida partida) {
         this.jogoController = jogoController;
@@ -23,69 +22,101 @@ public class Acoes extends JPanel implements Observer {
 
         setLayout(new FlowLayout(FlowLayout.CENTER));
         add(btnTruco);
-        add(btnAceitar);
-        add(btnCorrer);
         add(btnJogarNovamente);
 
-        btnTruco.addActionListener(e -> jogoController.trucar(jogoController.getJogadorAtual()));
-        btnAceitar.addActionListener(e -> {
-            Jogador atual = jogoController.getJogadorAtual();
-            Jogador oponente = (atual == partida.getJogador1() ? partida.getJogador2() : partida.getJogador1());
-            jogoController.aceitarTruco(oponente);
-        });
-        btnCorrer.addActionListener(e -> {
-            Jogador atual = jogoController.getJogadorAtual();
-            Jogador oponente = (atual == partida.getJogador1() ? partida.getJogador2() : partida.getJogador1());
-            jogoController.correrTruco(oponente);
-        });
+        btnTruco.addActionListener(e -> solicitarTruco());
         btnJogarNovamente.addActionListener(e -> jogoController.reiniciarPartida());
-
         btnJogarNovamente.setVisible(false);
 
-        //adicionando como observador
         partida.anexar(this);
         atualizar();
+    }
 
-        btnTruco.setEnabled(false);
-        btnAceitar.setEnabled(false);
-        btnCorrer.setEnabled(false);
+    private void solicitarTruco() {
+        Jogador solicitante = jogoController.getJogadorAtual();
+        jogoController.trucar(solicitante);
+        mostrarJanelaTruco(); 
+    }
+
+    private void mostrarJanelaTruco() {
+        if (!partida.isPedidoTrucoPendente() || janelaTrucoAberta) return;
+
+        janelaTrucoAberta = true;
+
+        SwingUtilities.invokeLater(() -> {
+            Jogador respondente = partida.getJogadorRespondeAposta();
+            if (respondente == null) {
+                janelaTrucoAberta = false;
+                return;
+            }
+
+            int valorAtual = partida.getValorMao();
+            int proximoValor = switch (valorAtual) {
+                case 3 -> 6;
+                case 6 -> 9;
+                case 9 -> 12;
+                default -> valorAtual;
+            };
+
+            Object[] opcoes = (valorAtual < 12)
+                    ? new Object[]{"Aceitar", "Correr", "Subir para " + proximoValor}
+                    : new Object[]{"Aceitar", "Correr"};
+            
+            String mensagem = switch (valorAtual) {
+            case 3 -> "Você recebeu um pedido de Truco!";
+            case 6 -> "Você recebeu um pedido de Seis!";
+            case 9 -> "Você recebeu um pedido de Nove!";
+            case 12 -> "Você recebeu um pedido de Doze!";
+            default -> "Você recebeu um pedido de Truco!";
+        };
+
+        JOptionPane optionPane = new JOptionPane(
+                mensagem,
+                JOptionPane.INFORMATION_MESSAGE,
+                JOptionPane.DEFAULT_OPTION,
+                null,
+                opcoes,
+                opcoes[0]
+        );
+        
+        JDialog dialog = optionPane.createDialog(this, "Aposta");
+        dialog.setLocation(500, 300); 
+        dialog.setVisible(true);
+
+        
+        Object selectedValue = optionPane.getValue();
+        int escolha = -1;
+        for (int i = 0; i < opcoes.length; i++) {
+            if (opcoes[i].equals(selectedValue)) {
+                escolha = i;
+                break;
+            }
+        }
+
+            janelaTrucoAberta = false;
+
+            switch (escolha) {
+                case 0 -> {
+                	jogoController.aceitarTruco(respondente);// Aceitar
+                	btnTruco.setEnabled(false);
+                }
+                case 1 -> {
+                	jogoController.correrTruco(respondente);   // Correr
+                }
+                case 2 -> {                                           // Subir
+                    jogoController.subirTruco(respondente);
+                    SwingUtilities.invokeLater(this::mostrarJanelaTruco);
+                }
+            }
+        });
     }
 
     @Override
     public void atualizar() {
         boolean partidaEncerrada = partida.isEncerrada();
-        boolean pedidoTrucoPendente = partida.isPedidoTrucoPendente();
-        boolean habilitaBotaoTruco = !partidaEncerrada && !pedidoTrucoPendente && partida.getEtapaAtual() != Partida.valorRodada.DOZE;
-        boolean partidaValendoTruco = pedidoTrucoPendente && partida.getJogadorRespondeAposta() != null;
-
-        btnTruco.setEnabled(habilitaBotaoTruco);
-        btnAceitar.setEnabled(!partidaEncerrada && partidaValendoTruco);
-        btnCorrer.setEnabled(!partidaEncerrada && partidaValendoTruco);
+        btnTruco.setEnabled(!partidaEncerrada && !partida.isPedidoTrucoPendente());
         btnJogarNovamente.setVisible(partidaEncerrada);
-
-        // atualiza botÃ£o de pedir truco
-        Partida.valorRodada prox = Partida.proximaValorRodada(partida.getEtapaAtual());
-        String valorBotaoTruco;
-
-        switch (prox) {
-            case TRUCO:
-                valorBotaoTruco = "Truco";
-                break;
-            case SEIS:
-                valorBotaoTruco = "Seis";
-                break;
-            case NOVE:
-                valorBotaoTruco = "Nove";
-                break;
-            case DOZE:
-            default:
-                valorBotaoTruco = "Doze";
-                break;
-        }
-
-        btnTruco.setText(valorBotaoTruco);
-
-        revalidate();
-        repaint();
     }
+
 }
+

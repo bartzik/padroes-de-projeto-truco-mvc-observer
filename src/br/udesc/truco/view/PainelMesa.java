@@ -12,11 +12,13 @@ import java.util.List;
 public class PainelMesa extends JPanel implements Observer {
     private final Partida partida;
     private final JogoController controle;
+    
     private final JPanel mao1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
     private final JPanel mao2 = new JPanel(new FlowLayout(FlowLayout.LEFT));
     private final JTextArea centro = new JTextArea(10, 60);
     private final int ALTURA_CARTA = 120;
-
+    private final JLabel labelVira = new JLabel();
+    
     public PainelMesa(Partida p, JogoController c) {
         super(new BorderLayout());
         this.partida = p;
@@ -29,7 +31,13 @@ public class PainelMesa extends JPanel implements Observer {
         JPanel maos = new JPanel(new GridLayout(2, 1));
         maos.add(wrap("Jogador 1", mao1));
         maos.add(wrap("Jogador 2", mao2));
+        
+        JPanel painelVira = new JPanel();
+        painelVira.setLayout(new FlowLayout(FlowLayout.CENTER));
+        painelVira.add(new JLabel("Vira: "));
+        painelVira.add(labelVira);
 
+        add(painelVira, BorderLayout.NORTH);
         add(maos, BorderLayout.WEST);
         add(new JScrollPane(centro), BorderLayout.CENTER);
         atualizar();
@@ -43,24 +51,16 @@ public class PainelMesa extends JPanel implements Observer {
     }
 
     public void atualizar() {
+    	
         mao1.removeAll();
         mao2.removeAll();
         renderizarMao(partida.getJogador1(), mao1);
         renderizarMao(partida.getJogador2(), mao2);
 
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < partida.getRodadas().size(); i++) {
-            sb.append("Rodada ").append(i + 1).append(": ");
-            for (Rodada.Jogada jogada : partida.getRodadas().get(i).getJogadas()) {
-                sb.append(jogada.jogador.getNome()).append(" -> ").append(jogada.carta).append(" | ");
-            }
-            if (i < partida.getVencedoresDasRodadas().size()) {
-                var v = partida.getVencedoresDasRodadas().get(i);
-                sb.append("  Vencedor: ").append(v == null ? "Empate" : v.getNome());
-            }
-            sb.append("\n");
-        }
-        centro.setText(sb.toString());
+        atualizarVira();
+
+        atualizarRodadas();
+
         revalidate();
         repaint();
     }
@@ -79,4 +79,35 @@ public class PainelMesa extends JPanel implements Observer {
             painel.add(botao);
         }
     }
+    
+    private void atualizarVira() {
+        Carta vira = partida.getVira();
+        if (vira != null) {
+            labelVira.setIcon(CarregadorImagens.iconeCarta(vira.getNaipe(), vira.getValorCarta(), ALTURA_CARTA));
+        } else {
+            labelVira.setIcon(null);
+        }
+    }
+
+    private void atualizarRodadas() {
+        StringBuilder sb = new StringBuilder();
+        List<Rodada> rodadas = partida.getRodadas();
+        List<Jogador> vencedores = partida.getVencedoresDasRodadas();
+
+        for (int i = 0; i < rodadas.size(); i++) {
+            sb.append("Rodada ").append(i + 1).append(": ");
+            for (Rodada.Jogada jogada : rodadas.get(i).getJogadas()) {
+                sb.append(jogada.getJogador().getNome())
+                  .append(" -> ").append(jogada.getCarta())
+                  .append(" | ");
+            }
+            if (i < vencedores.size()) {
+                Jogador v = vencedores.get(i);
+                sb.append(" Vencedor: ").append(v == null ? "Empate" : v.getNome());
+            }
+            sb.append("\n");
+        }
+        centro.setText(sb.toString());
+    }
+    
 }
